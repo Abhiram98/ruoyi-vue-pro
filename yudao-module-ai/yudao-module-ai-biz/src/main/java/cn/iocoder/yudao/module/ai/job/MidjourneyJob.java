@@ -45,11 +45,7 @@ public class MidjourneyJob implements JobHandler {
         // TODO @fan：43 和 51 其实有点重叠，日志，建议只打 51
         log.info("Midjourney 同步 - 开始...");
         // TODO @fan：Job、Service 等业务层，不要直接使用 LambdaUpdateWrapper，这样会导致 mapper 穿透到逻辑层。要收敛到 mapper 里。
-        List<AiImageDO> imageList = imageMapper.selectList(
-                new LambdaUpdateWrapper<AiImageDO>()
-                        .eq(AiImageDO::getStatus, AiImageStatusEnum.IN_PROGRESS.getStatus())
-                        .eq(AiImageDO::getPlatform, AiPlatformEnum.MIDJOURNEY.getPlatform())
-        );
+        List<AiImageDO> imageList = selectByStatusAndPlatform();
         log.info("Midjourney 同步 - 任务数量 {}!", imageList.size());
         if (CollUtil.isEmpty(imageList)) {
             // TODO @fan：51 和 54，其实有点重叠。建议 51 挪到 55 之后打。
@@ -79,6 +75,15 @@ public class MidjourneyJob implements JobHandler {
         // 4、批了更新 updateImageList
         imageMapper.updateBatch(updateImageList);
         return "Midjourney 同步 - ".concat(String.valueOf(updateImageList.size())).concat(" 任务!");
+    }
+
+    private List<AiImageDO> selectByStatusAndPlatform() {
+        List<AiImageDO> imageList = imageMapper.selectList(
+                new LambdaUpdateWrapper<AiImageDO>()
+                        .eq(AiImageDO::getStatus, AiImageStatusEnum.IN_PROGRESS.getStatus())
+                        .eq(AiImageDO::getPlatform, AiPlatformEnum.MIDJOURNEY.getPlatform())
+        );
+        return imageList;
     }
 
 }
