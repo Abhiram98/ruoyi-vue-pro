@@ -33,7 +33,7 @@ public class ProductBrowseHistoryServiceImpl implements ProductBrowseHistoryServ
         }
 
         // 情况一：同一个商品，只保留最新的一条记录
-        ProductBrowseHistoryDO historyDO = browseHistoryMapper.selectOne(ProductBrowseHistoryDO::getUserId, userId, ProductBrowseHistoryDO::getSpuId, spuId);
+        ProductBrowseHistoryDO historyDO = selectByUserIdAndSpuId(userId, spuId);
         if (historyDO != null) {
             browseHistoryMapper.deleteById(historyDO);
         } else {
@@ -50,6 +50,11 @@ public class ProductBrowseHistoryServiceImpl implements ProductBrowseHistoryServ
                 .setUserId(userId)
                 .setSpuId(spuId);
         browseHistoryMapper.insert(browseHistory);
+    }
+
+    private ProductBrowseHistoryDO selectByUserIdAndSpuId(Long userId, Long spuId) {
+        ProductBrowseHistoryDO historyDO = browseHistoryMapper.selectOne(ProductBrowseHistoryDO::getUserId, userId, ProductBrowseHistoryDO::getSpuId, spuId);
+        return historyDO;
     }
 
     @Override
