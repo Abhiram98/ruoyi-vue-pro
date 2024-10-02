@@ -91,13 +91,17 @@ public class AiChatConversationServiceImpl implements AiChatConversationService 
         // 获取模型信息并验证
         AiChatModalRes chatModal = aiChatModalService.getChatModalOfValidate(updateReqVO.getModelId());
         // 校验modal是否可用
-        if (AiChatModalDisableEnum.YES.getValue().equals(chatModal.getDisable())) {
-            throw ServiceExceptionUtil.exception(ErrorCodeConstants.AI_MODAL_DISABLE_NOT_USED);
-        }
+        validateAvailable(chatModal);
         // 更新对话信息
         AiChatConversationDO updateAiChatConversationDO
                 = AiChatConversationConvert.INSTANCE.convertAiChatConversationDO(updateReqVO);
         return aiChatConversationMapper.updateById(updateAiChatConversationDO) > 0;
+    }
+
+    private void validateAvailable(AiChatModalRes chatModal) {
+        if (AiChatModalDisableEnum.YES.getValue().equals(chatModal.getDisable())) {
+            throw ServiceExceptionUtil.exception(ErrorCodeConstants.AI_MODAL_DISABLE_NOT_USED);
+        }
     }
 
     @Override
