@@ -187,8 +187,7 @@ public class CrmContractController {
         Map<Long, CrmContactDO> contactMap = convertMap(contactService.getContactList(convertSet(contractList,
                 CrmContractDO::getSignContactId)), CrmContactDO::getId);
         // 1.4 获取商机
-        Map<Long, CrmBusinessDO> businessMap = convertMap(businessService.getBusinessList(convertSet(contractList,
-                CrmContractDO::getBusinessId)), CrmBusinessDO::getId);
+        Map<Long, CrmBusinessDO> businessMap = getBusinessMap(contractList);
         // 2. 拼接数据
         return BeanUtils.toBean(contractList, CrmContractRespVO.class, contractVO -> {
             // 2.1 设置客户信息
@@ -205,6 +204,12 @@ public class CrmContractController {
             // 2.4 设置商机信息
             findAndThen(businessMap, contractVO.getBusinessId(), business -> contractVO.setBusinessName(business.getName()));
         });
+    }
+
+    private Map<Long, CrmBusinessDO> getBusinessMap(List<CrmContractDO> contractList) {
+        Map<Long, CrmBusinessDO> businessMap = convertMap(businessService.getBusinessList(convertSet(contractList,
+                CrmContractDO::getBusinessId)), CrmBusinessDO::getId);
+        return businessMap;
     }
 
     @GetMapping("/check-contract-count")
