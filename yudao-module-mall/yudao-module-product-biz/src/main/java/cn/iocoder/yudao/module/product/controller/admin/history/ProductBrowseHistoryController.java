@@ -50,10 +50,15 @@ public class ProductBrowseHistoryController {
 
         // 得到商品 spu 信息
         Set<Long> spuIds = convertSet(pageResult.getList(), ProductBrowseHistoryDO::getSpuId);
-        Map<Long, ProductSpuDO> spuMap = convertMap(productSpuService.getSpuList(spuIds), ProductSpuDO::getId);
+        Map<Long, ProductSpuDO> spuMap = getSpuMap(spuIds);
         return success(BeanUtils.toBean(pageResult, ProductBrowseHistoryRespVO.class,
                 vo -> Optional.ofNullable(spuMap.get(vo.getSpuId()))
                         .ifPresent(spu -> vo.setSpuName(spu.getName()).setPicUrl(spu.getPicUrl()).setPrice(spu.getPrice()))));
+    }
+
+    private Map<Long, ProductSpuDO> getSpuMap(Set<Long> spuIds) {
+        Map<Long, ProductSpuDO> spuMap = convertMap(productSpuService.getSpuList(spuIds), ProductSpuDO::getId);
+        return spuMap;
     }
 
 }
