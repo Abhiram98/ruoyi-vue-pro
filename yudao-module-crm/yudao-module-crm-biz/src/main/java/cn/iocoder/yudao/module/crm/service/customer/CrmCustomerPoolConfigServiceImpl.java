@@ -35,6 +35,10 @@ public class CrmCustomerPoolConfigServiceImpl implements CrmCustomerPoolConfigSe
     @Override
     public CrmCustomerPoolConfigDO getCustomerPoolConfig() {
         // TODO @puhui999：这个要搞到 mapper 里噢。
+        return selectOne();
+    }
+
+    private CrmCustomerPoolConfigDO selectOne() {
         return customerPoolConfigMapper.selectOne(new LambdaQueryWrapperX<CrmCustomerPoolConfigDO>().last("LIMIT 1"));
     }
 
