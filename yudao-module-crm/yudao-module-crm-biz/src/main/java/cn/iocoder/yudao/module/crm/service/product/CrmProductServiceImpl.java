@@ -152,6 +152,10 @@ public class CrmProductServiceImpl implements CrmProductService {
 
     @Override
     public CrmProductDO getProductByCategoryId(Long categoryId) {
+        return selectCountByCategoryId(categoryId);
+    }
+
+    private CrmProductDO selectCountByCategoryId(Long categoryId) {
         return productMapper.selectOne(new LambdaQueryWrapper<CrmProductDO>().eq(CrmProductDO::getCategoryId, categoryId));
     }
 
