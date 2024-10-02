@@ -77,8 +77,7 @@ public class CrmFollowUpRecordController {
         /// 拼接数据
         Map<Long, CrmContactDO> contactMap = convertMap(contactService.getContactList(
                 convertSetByFlatMap(pageResult.getList(), item -> item.getContactIds().stream())), CrmContactDO::getId);
-        Map<Long, CrmBusinessDO> businessMap = convertMap(businessService.getBusinessList(
-                convertSetByFlatMap(pageResult.getList(), item -> item.getBusinessIds().stream())), CrmBusinessDO::getId);
+        Map<Long, CrmBusinessDO> businessMap = getBusinessMap(pageResult);
         PageResult<CrmFollowUpRecordRespVO> voPageResult = BeanUtils.toBean(pageResult, CrmFollowUpRecordRespVO.class, record -> {
             record.setContactNames(new ArrayList<>()).setBusinessNames(new ArrayList<>());
             record.getContactIds().forEach(id -> MapUtils.findAndThen(contactMap, id,
@@ -87,6 +86,12 @@ public class CrmFollowUpRecordController {
                     business -> record.getBusinessNames().add(business.getName())));
         });
         return success(voPageResult);
+    }
+
+    private Map<Long, CrmBusinessDO> getBusinessMap(PageResult<CrmFollowUpRecordDO> pageResult) {
+        Map<Long, CrmBusinessDO> businessMap = convertMap(businessService.getBusinessList(
+                convertSetByFlatMap(pageResult.getList(), item -> item.getBusinessIds().stream())), CrmBusinessDO::getId);
+        return businessMap;
     }
 
 }
