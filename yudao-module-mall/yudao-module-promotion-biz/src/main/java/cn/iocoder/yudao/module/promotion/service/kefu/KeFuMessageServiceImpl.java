@@ -72,13 +72,17 @@ public class KeFuMessageServiceImpl implements KeFuMessageService {
         }
         // 2.4 会员用户发送消息时，如果管理员删除过会话则进行恢复
         // TODO @puhui999：建议 && 换一行
-        if (UserTypeEnum.MEMBER.getValue().equals(kefuMessage.getSenderType()) && Boolean.TRUE.equals(conversation.getAdminDeleted())) {
-            conversationService.updateConversationAdminDeleted(kefuMessage.getConversationId(), Boolean.FALSE);
-        }
+        updateConversationLastMessage(conversation, kefuMessage);
 
         // 3. 发送消息
         getSelf().sendAsyncMessage(sendReqVO.getReceiverType(), sendReqVO.getReceiverId(), kefuMessage);
         return kefuMessage.getId();
+    }
+
+    private void updateConversationLastMessage(KeFuConversationDO conversation, KeFuMessageDO kefuMessage) {
+        if (UserTypeEnum.MEMBER.getValue().equals(kefuMessage.getSenderType()) && Boolean.TRUE.equals(conversation.getAdminDeleted())) {
+            conversationService.updateConversationAdminDeleted(kefuMessage.getConversationId(), Boolean.FALSE);
+        }
     }
 
     @Override
