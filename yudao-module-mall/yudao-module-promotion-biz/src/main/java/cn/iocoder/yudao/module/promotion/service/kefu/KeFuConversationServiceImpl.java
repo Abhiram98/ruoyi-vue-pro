@@ -108,6 +108,10 @@ public class KeFuConversationServiceImpl implements KeFuConversationService {
     @Override
     public KeFuConversationDO getConversationByUserId(Long userId) {
         // TODO @puhui999：service 不写 dao 的逻辑哈
+        return selectByUserId(userId);
+    }
+
+    private KeFuConversationDO selectByUserId(Long userId) {
         return conversationMapper.selectOne(KeFuConversationDO::getUserId, userId);
     }
 
