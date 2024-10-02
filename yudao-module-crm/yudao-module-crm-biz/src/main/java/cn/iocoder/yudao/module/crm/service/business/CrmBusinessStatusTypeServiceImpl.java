@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.crm.dal.dataobject.business.CrmBusinessStatusType
 import cn.iocoder.yudao.module.crm.dal.mysql.business.CrmBusinessStatusMapper;
 import cn.iocoder.yudao.module.crm.dal.mysql.business.CrmBusinessStatusTypeMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -97,12 +98,16 @@ public class CrmBusinessStatusTypeServiceImpl implements CrmBusinessStatusTypeSe
     private void validateBusinessStatusTypeExists(String name, Long id) {
         LambdaQueryWrapper<CrmBusinessStatusTypeDO> wrapper = new LambdaQueryWrapperX<>();
         if(null != id) {
-            wrapper.ne(CrmBusinessStatusTypeDO::getId, id);
+            wrapper.ne(selectByIdAndName(), id);
         }
         long cnt = businessStatusTypeMapper.selectCount(wrapper.eq(CrmBusinessStatusTypeDO::getName, name));
         if (cnt > 0) {
             throw exception(BUSINESS_STATUS_TYPE_NAME_EXISTS);
         }
+    }
+
+    private SFunction<CrmBusinessStatusTypeDO, Object> selectByIdAndName() {
+        return CrmBusinessStatusTypeDO::getId;
     }
 
     @Override
