@@ -23,7 +23,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertMap;
@@ -77,7 +79,7 @@ public class CrmFollowUpRecordController {
         /// 拼接数据
         Map<Long, CrmContactDO> contactMap = convertMap(contactService.getContactList(
                 convertSetByFlatMap(pageResult.getList(), item -> item.getContactIds().stream())), CrmContactDO::getId);
-        Map<Long, CrmBusinessDO> businessMap = getBusinessMap(pageResult);
+        Map<Long, CrmBusinessDO> businessMap = getBusinessMap(convertSetByFlatMap(pageResult.getList(), item -> item.getBusinessIds().stream()));
         PageResult<CrmFollowUpRecordRespVO> voPageResult = BeanUtils.toBean(pageResult, CrmFollowUpRecordRespVO.class, record -> {
             record.setContactNames(new ArrayList<>()).setBusinessNames(new ArrayList<>());
             record.getContactIds().forEach(id -> MapUtils.findAndThen(contactMap, id,
@@ -88,10 +90,9 @@ public class CrmFollowUpRecordController {
         return success(voPageResult);
     }
 
-    private Map<Long, CrmBusinessDO> getBusinessMap(PageResult<CrmFollowUpRecordDO> pageResult) {
-        Map<Long, CrmBusinessDO> businessMap = convertMap(businessService.getBusinessList(
-                convertSetByFlatMap(pageResult.getList(), item -> item.getBusinessIds().stream())), CrmBusinessDO::getId);
-        return businessMap;
+    private Map<Long, CrmBusinessDO> getBusinessMap(Collection<Long> ids) {
+        return convertMap(businessService.getBusinessList(
+                ids), CrmBusinessDO::getId);
     }
 
 }
