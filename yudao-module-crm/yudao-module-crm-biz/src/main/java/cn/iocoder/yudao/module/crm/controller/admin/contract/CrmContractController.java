@@ -39,9 +39,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -187,7 +185,8 @@ public class CrmContractController {
         Map<Long, CrmContactDO> contactMap = convertMap(contactService.getContactList(convertSet(contractList,
                 CrmContractDO::getSignContactId)), CrmContactDO::getId);
         // 1.4 获取商机
-        Map<Long, CrmBusinessDO> businessMap = getBusinessMap(contractList);
+        Map<Long, CrmBusinessDO> businessMap = getBusinessMap(convertSet(contractList,
+                CrmContractDO::getBusinessId));
         // 2. 拼接数据
         return BeanUtils.toBean(contractList, CrmContractRespVO.class, contractVO -> {
             // 2.1 设置客户信息
@@ -206,10 +205,8 @@ public class CrmContractController {
         });
     }
 
-    private Map<Long, CrmBusinessDO> getBusinessMap(List<CrmContractDO> contractList) {
-        Map<Long, CrmBusinessDO> businessMap = convertMap(businessService.getBusinessList(convertSet(contractList,
-                CrmContractDO::getBusinessId)), CrmBusinessDO::getId);
-        return businessMap;
+    private Map<Long, CrmBusinessDO> getBusinessMap(Collection<Long> ids) {
+        return convertMap(businessService.getBusinessList(ids), CrmBusinessDO::getId);
     }
 
     @GetMapping("/check-contract-count")
