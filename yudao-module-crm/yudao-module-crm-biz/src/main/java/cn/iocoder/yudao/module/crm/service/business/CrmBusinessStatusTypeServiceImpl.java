@@ -96,18 +96,14 @@ public class CrmBusinessStatusTypeServiceImpl implements CrmBusinessStatusTypeSe
 
     // TODO @ljlleo 这个方法，这个参考 validateDeptNameUnique 实现。
     private void validateBusinessStatusTypeExists(String name, Long id) {
-        LambdaQueryWrapper<CrmBusinessStatusTypeDO> wrapper = new LambdaQueryWrapperX<>();
-        if(null != id) {
-            wrapper.ne(selectByIdAndName(), id);
-        }
-        long cnt = businessStatusTypeMapper.selectCount(wrapper.eq(CrmBusinessStatusTypeDO::getName, name));
-        if (cnt > 0) {
+        CrmBusinessStatusTypeDO businessStatusTypeDO = selectByIdAndName(id, name);
+        if (businessStatusTypeDO != null) {
             throw exception(BUSINESS_STATUS_TYPE_NAME_EXISTS);
         }
     }
 
-    private SFunction<CrmBusinessStatusTypeDO, Object> selectByIdAndName() {
-        return CrmBusinessStatusTypeDO::getId;
+    private CrmBusinessStatusTypeDO selectByIdAndName(Long id, String name) {
+        return businessStatusTypeMapper.selectOne(CrmBusinessStatusTypeDO::getId, id, CrmBusinessStatusTypeDO::getName, name);
     }
 
     @Override
